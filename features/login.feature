@@ -18,3 +18,13 @@ Feature: SauceDemo E2E
       | standard_user    |          | Epic sadface: Password is required |
       | nonexistent_user | foobar   | Epic sadface: Username and password do not match any user in this service|
 
+# ── INVENTORY ─────────────────────────────────────────
+
+  Scenario: Inventory shows correct number of products
+    Given I am logged in
+    Then I should see 6 products
+
+  Scenario: Product has correct name and price
+    Given I am logged in
+    Then I should see a product named "Sauce Labs Backpack"
+    And the product "Sauce Labs Backpack" should have price "$29.99"

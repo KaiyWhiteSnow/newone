@@ -1,7 +1,8 @@
 import { Given, When, Then } from '@wdio/cucumber-framework';
-import { $, browser, expect } from '@wdio/globals';
+import { expect } from '@wdio/globals';
 
 import loginPage from '../pageobjects/login.page.js';
+import inventoryPage from '../pageobjects/secure.page.js';
 
 const pages = {
     login: loginPage,
@@ -34,8 +35,39 @@ Then(
 Given(/^I am logged in$/, async () => {
     const user = 'standard_user';
     const password = 'secret_sauce';
+    await loginPage.open();
     await loginPage.login(user, password)
 });
+
+
+// ─────────────────────────────────────────────────────────────
+// INVENTORY
+// ─────────────────────────────────────────────────────────────
+
+Then('I should see {int} products', async (count: number) => {
+    const items = await inventoryPage.inventoryItems;
+    expect(items).toHaveLength(count);
+});
+
+Then('I should see a product named {string}', async (name: string) => {
+    const names = await inventoryPage.getItemNames();
+    expect(names).toContain(name);
+});
+
+Then(
+    'the product {string} should have price {string}',
+    async (name: string, price: string) => {
+        const item = await inventoryPage.getItemByName(name);
+        if (!item) {
+            throw new Error(`Product "${name}" not found`);
+        }
+        const actualPrice = await item
+            .$('[data-test="inventory-item-price"]')
+            .getText();
+
+        expect(actualPrice).toEqual(price);
+    }
+);
 
 Then('the inventory page should be loaded', () => {
   // Write code here that turns the phrase above into concrete actions
