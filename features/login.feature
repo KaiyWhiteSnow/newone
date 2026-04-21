@@ -28,3 +28,28 @@ Feature: SauceDemo E2E
     Given I am logged in
     Then I should see a product named "Sauce Labs Backpack"
     And the product "Sauce Labs Backpack" should have price "$29.99"
+
+  # ── CART ──────────────────────────────────────────────
+
+  Scenario: Add item to cart
+    Given I am logged in
+    When I add "Sauce Labs Backpack" to the cart
+    Then the cart badge should show 1
+    
+  Scenario: Reset app state clears cart
+    Given I am logged in
+    When I add "Sauce Labs Backpack" to the cart
+    And I reset the app state
+    Then the cart badge should show 0
+
+  # ── NAVIGATION ────────────────────────────────────────
+
+  Scenario: Click product opens detail page
+    Given I am logged in
+    When I click the product "Sauce Labs Backpack"
+    Then I should see product detail page for "Sauce Labs Backpack"
+
+  Scenario: Cart page opens
+    Given I am logged in
+    When I open the cart
+    Then I should be on the cart page

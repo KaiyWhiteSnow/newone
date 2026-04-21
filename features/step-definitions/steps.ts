@@ -36,7 +36,8 @@ Given(/^I am logged in$/, async () => {
     const user = 'standard_user';
     const password = 'secret_sauce';
     await loginPage.open();
-    await loginPage.login(user, password)
+    await loginPage.login(user, password);
+    await inventoryPage.resetAppState();
 });
 
 
@@ -69,6 +70,43 @@ Then(
     }
 );
 
-Then('the inventory page should be loaded', () => {
-  // Write code here that turns the phrase above into concrete actions
-})
+Then('the inventory page should be loaded', async () => {
+    await expect(inventoryPage.inventoryContainer).toBeDisplayed();
+});
+
+
+// Cart actions
+When(/^I add "([^"]*)" to the cart$/, async (name: string) => {
+    await inventoryPage.addItemToCart(name);
+});
+
+When(/^I reset the app state$/, async () => {
+    await inventoryPage.resetAppState();
+});
+
+Then(/^the cart badge should show (\d+)$/, async (count: string) => {
+    const actual = await inventoryPage.getShoppingCartCount();
+    expect(actual).toBe(parseInt(count, 10));
+});
+
+// Product navigation
+When(/^I click the product "([^"]*)"$/, async (name: string) => {
+    await inventoryPage.clickItemTitle(name);
+});
+
+Then(
+    /^I should see product detail page for "([^"]*)"$/,
+    async (name: string) => {
+        const title = await $('[data-test="inventory-item-name"]');
+        await expect(title).toHaveText(name);
+    }
+);
+
+// Cart page
+When(/^I open the cart$/, async () => {
+    await inventoryPage.clickShoppingCart();
+});
+
+Then(/^I should be on the cart page$/, async () => {
+    await expect($('.cart_list')).toBeDisplayed();
+});
